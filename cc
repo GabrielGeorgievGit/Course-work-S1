@@ -1,12 +1,13 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
+#include <windows.h>
 using namespace std;
 
 struct Travel {
 	
 	//public:
-	string destination;
+	string route;
 	string ship;
 	string captain;
 	
@@ -20,6 +21,60 @@ struct Travel {
 	
 };
 
+void lineEraser(int propertyIndex, Travel Obj) {
+	
+	system("cls");
+	cout << "Adding cruise:\n"
+		<< "\nRoute: " << Obj.route
+		<< "\nShip : " << Obj.route
+		<< "\nCaptain name: " << Obj.captain << endl;
+	
+	switch(propertyIndex)
+	{
+		case 1:
+			cout << "Price for class 1: ";
+			if(propertyIndex == 1)
+			{
+				cout << Obj.priceClass1 << endl;
+				break;
+			}
+		case 2: cout << "Price for class 2: ";
+				if(propertyIndex == 2)
+				{
+					cout << Obj.priceClass2 << endl;
+					break;
+				}
+		
+		case 3: cout << "Number of passengers in class 1: ";
+					if(propertyIndex == 3)
+				{
+					cout << Obj.numPassengersClass1 << endl;
+					break;
+				}
+		
+		case 4: cout << "Number of passengers in class 2: ";
+					if(propertyIndex == 4)
+				{
+					cout << Obj.numPassengersClass2 << endl;
+					break;
+				}
+		
+
+	}
+	int input;
+	cout << "IVAN: ";
+		cout << "\b\b\b\b\b\b";
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD coord = {5 , 0};//24 7		 
+	SetConsoleCursorPosition(hStdOut,coord);
+	//cout << "\n\b\b";
+	
+
+	//printf("\b");printf("\b");printf("\b");
+	//const string a = spaces;
+//	cout << spaces;
+}
+
 bool maxCruisesValidation(vector<Travel> Cruises) {
 	if(Cruises.size() == 2)return true;
 	return false;
@@ -30,31 +85,64 @@ void maxCruisesValidation() {
 		system("pause");
 }
 
-void add(vector<Travel> *Cruises) {
+int intValidation(string print) {
+	
+	cout << print;
+	int input;
+	cin >> input;
+	while(!cin)
+	{
+		//cout << "Enter an integer!!!\n";
+		cin.clear();
+		cin.ignore(10000, '\n');
+	//	system("pause");
+	//	lineEraser(3,print.size());
+		cout << endl << print;
+		cin >> input;	
+	}
+	return input;
+}
+
+void addCruise(vector<Travel> *Cruises) {
+	
+	system("cls");
 	
 	if(maxCruisesValidation(*Cruises))
 	{
 		maxCruisesValidation();
 		return;
 	}
+	
+	cout << "Adding cruise:\n\n";
 	Travel newCruise;
 	
-	cout << "Destination: ";
-	cin >> newCruise.destination;
+	cout << "Route: ";
+	getline(cin >> ws, newCruise.route);
+	
 	cout << "Ship : ";
-	cin >> newCruise.ship;
+	getline(cin >> ws, newCruise.ship);
+	
 	cout << "Captain name: ";
 	getline(cin >> ws, newCruise.captain);
-	cout << "Price for class 1: ";
-	cin >> newCruise.priceClass1;
+	
+	int input = 0;
+	
+	newCruise.priceClass1 = intValidation("Price for class 1: ");
+//	cout << "Price for class 1: ";
+//	cin >> newCruise.priceClass1;
+	
 	cout << "Price for class 2: ";
 	cin >> newCruise.priceClass2;
+	
 	cout << "Number of passengers in class 1: ";
 	cin >> newCruise.numPassengersClass1;
+	
 	cout << "Number of passengers in class 2: ";
 	cin >> newCruise.numPassengersClass2;
+	
 	cout << "Starting date of cruise: ";
 	cin >> newCruise.dateStart;
+	
 	cout << "Ending date of cruise: ";
 	cin >> newCruise.dateEnd;
 	
@@ -69,13 +157,13 @@ void printVector(vector<Travel> Cruises) {
 	{
 		
 		cout << "Cruise " << i + 1 << endl 
-			<< "destination: " << Cruises.at(i).destination << endl
-			<< "ship name: " << Cruises.at(i).ship << endl
-			<< "captain: " << Cruises.at(i).captain << endl
-			<< "class 1 price: " << Cruises.at(i).priceClass1 << endl
-			<< "class 2 price: " << Cruises.at(i).priceClass2 << endl
-			<< "class 1 passengers: " << Cruises.at(i).numPassengersClass1 << endl
-			<< "class 2 passengers: " << Cruises.at(i).numPassengersClass2 << endl
+			<< "Route: " << Cruises.at(i).route << endl
+			<< "Ship name: " << Cruises.at(i).ship << endl
+			<< "Captain: " << Cruises.at(i).captain << endl
+			<< "Class 1 price: " << Cruises.at(i).priceClass1 << endl
+			<< "Class 2 price: " << Cruises.at(i).priceClass2 << endl
+			<< "Class 1 passengers: " << Cruises.at(i).numPassengersClass1 << endl
+			<< "Class 2 passengers: " << Cruises.at(i).numPassengersClass2 << endl
 			<< "Start date: " << Cruises.at(i).dateStart << endl
 			<< "End date: " << Cruises.at(i).dateEnd << endl
 			
@@ -90,7 +178,7 @@ void ODIT() {
 	
 	cout << "1.Cruises sorted by ship nVme\n"
 		<< "2.Cruises for a period sorted by date\n"
-		<< "3.Cruises to destinations and month sorted by month\n"
+		<< "3.Cruises to routes and month sorted by month\n"
 		<< "4.Back\n"
 		;
 	int input = 1;
@@ -105,7 +193,7 @@ void ODIT() {
 
 void functions() {
 	
-	cout << "1.add\n"
+	cout << "1.Add a cruise\n"
 		<< "2.Show all cruises\n"
 		<< "3.Change a cruise\n"
 		<< "4.Cruise with lowest price\n"
@@ -144,7 +232,7 @@ int main() {
 	cout << a;
 	A.ship = "red";
 	A.captain = "Ivan Zarev";
-	A.destination = "Atlantida";
+	A.route = "Atlantida";
 	Cruises.push_back(A);
 	int input = 0;
 	
@@ -157,7 +245,7 @@ int main() {
 		cin >> input;
 		switch(input)
 		{
-			case 1: add(&Cruises); break;
+			case 1: addCruise(&Cruises); break;
 			case 2 : printVector(Cruises); break;
 			
 			case 7: ODIT(); break;
