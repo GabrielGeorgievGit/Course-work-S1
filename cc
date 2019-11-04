@@ -7,6 +7,7 @@ using namespace std;
 struct Travel {
 	
 	//public:
+	int cruiseNum;
 	string route;
 	string ship;
 	string captain;
@@ -76,7 +77,7 @@ void lineEraser(int propertyIndex, Travel Obj) {
 }
 
 bool maxCruisesValidation(vector<Travel> Cruises) {
-	if(Cruises.size() == 2)return true;
+	if(Cruises.size() >= 2)return true;
 	return false;
 }
 void maxCruisesValidation() {
@@ -115,8 +116,9 @@ void addCruise(vector<Travel> *Cruises) {
 	
 	cout << "Adding cruise:\n\n";
 	Travel newCruise;
-	
-	cout << "Route: ";
+	newCruise.cruiseNum = Cruises->size() + 1;
+	cout << "Cruise " << newCruise.cruiseNum << endl
+		<< "Route: ";
 	getline(cin >> ws, newCruise.route);
 	
 	cout << "Ship : ";
@@ -152,11 +154,17 @@ void addCruise(vector<Travel> *Cruises) {
 void printVector(vector<Travel> Cruises) {
 	
 	system("cls");
+	if(Cruises.size() == 0)
+	{
+		cout << "There are no cruises.\n";
+		system("pause");
+		return;
+	}
 	//vector<Travel>::iterator it;
 	for(int i = 0; i < Cruises.size(); i++)
 	{
 		
-		cout << "Cruise " << i + 1 << endl 
+		cout << "Cruise " << Cruises.at(i).cruiseNum << endl 
 			<< "Route: " << Cruises.at(i).route << endl
 			<< "Ship name: " << Cruises.at(i).ship << endl
 			<< "Captain: " << Cruises.at(i).captain << endl
@@ -175,8 +183,9 @@ void printVector(vector<Travel> Cruises) {
 }
 
 void ODIT() {
+	system("cls");
 	
-	cout << "1.Cruises sorted by ship nVme\n"
+	cout << "Odit:\n\n" << "1.Cruises sorted by ship nVme\n"
 		<< "2.Cruises for a period sorted by date\n"
 		<< "3.Cruises to routes and month sorted by month\n"
 		<< "4.Back\n"
@@ -193,7 +202,8 @@ void ODIT() {
 
 void functions() {
 	
-	cout << "1.Add a cruise\n"
+	cout << "Main menu:\n\n" 
+		<< "1.Add a cruise\n"
 		<< "2.Show all cruises\n"
 		<< "3.Change a cruise\n"
 		<< "4.Cruise with lowest price\n"
@@ -208,17 +218,16 @@ int main() {
 	
 	vector<Travel> Cruises;
 	Travel A;// = new Travel;
-	ofstream fout("memory.txt",ofstream::out);
-	ifstream fin("memory.txt");
-	
-	string line="13";
+	ofstream fout;
+	ifstream fin;
+	fout.open("memory.txt", ios::out | ios::app);
+	fin.open("memory.txt", ios::in);
+	//fout << "ivan" << endl;
 	if (fin.is_open())
 	{
-		while (getline(fin,line))
-		{
-			cout << line <<'\n';
-		}
-		fin.close();
+		cout << "13\n";
+		system("pause");
+		//fin.close();
 	}
 	
 	else 
@@ -227,13 +236,8 @@ int main() {
 		system("pause");
 		return 0;
 	}
-	string a;
-	fin >> a;
-	cout << a;
-	A.ship = "red";
-	A.captain = "Ivan Zarev";
-	A.route = "Atlantida";
-	Cruises.push_back(A);
+	//if(fout.bad())return 0;
+	fout << "KYS";
 	int input = 0;
 	
 	while(input != 8)
@@ -246,9 +250,11 @@ int main() {
 		switch(input)
 		{
 			case 1: addCruise(&Cruises); break;
-			case 2 : printVector(Cruises); break;
+			case 2: printVector(Cruises); break;
 			
 			case 7: ODIT(); break;
+			case 8: break;
 		}
 	}
+	
 }
