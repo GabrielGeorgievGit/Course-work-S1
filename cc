@@ -76,12 +76,38 @@ void lineEraser(int propertyIndex, Travel Obj) {
 //	cout << spaces;
 }
 
+bool YN() {
+	
+	string input = "";
+	
+	while(true)
+	{
+		cout << "Answer: ";
+		cin >> input;
+		
+		if(input == "YES" || input == "Yes" || input == "Y" ||
+								 input == "yes" || input == "y")
+			return true;
+		
+		if(input == "NO" || input == "No" || input == "N" ||
+								 input == "no" || input == "n")
+			return false;
+	}
+}
+
+void separate(int minuses) { // cosmetic
+	cout << "<";
+	for(int i = 0; i < minuses - 2; i++)
+		cout << "-";
+	cout << ">";
+}
+
 bool maxCruisesValidation(vector<Travel> Cruises) {
 	if(Cruises.size() >= 2)return true;
 	return false;
 }
 void maxCruisesValidation() {
-	cout << "Maximum size of cruises reached!!!\n"
+	cout << "Maximum size of cruises reached!(100)\n"
 		<<"If you want to add cruse, change one\n";
 		system("pause");
 }
@@ -93,30 +119,57 @@ int intValidation(string print) {
 	cin >> input;
 	while(!cin)
 	{
-		//cout << "Enter an integer!!!\n";
+		cout << "Enter a number!!!";
 		cin.clear();
 		cin.ignore(10000, '\n');
 	//	system("pause");
 	//	lineEraser(3,print.size());
-		cout << endl << print;
+		cout << print;
+		cin >> input;	
+	}
+	//cin.clear();
+	cin.ignore(10000, '\n');
+	return input;
+}
+double doubleValidation(string print) {
+	cout << print;
+	double input;
+	cin >> input;
+	while(!cin)
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Choose a number!\n" << print;
 		cin >> input;	
 	}
 	return input;
 }
 
-void addCruise(vector<Travel> *Cruises) {
+bool areCruises(vector<Travel> Cruises) {
+	return Cruises.size() == 0 ? false : true;
+}
+
+void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
 	
 	system("cls");
 	
-	if(maxCruisesValidation(*Cruises))
+	if(cruiseNum == 0)
 	{
-		maxCruisesValidation();
-		return;
+		if(maxCruisesValidation(*Cruises))
+		{
+			maxCruisesValidation();
+			return;
+		}
+		
+		cruiseNum = Cruises->size() + 1;
+		cout << "Adding cruise:\n\n";
 	}
+	else cout << "Changing cruise " << cruiseNum << "\n\n";
 	
-	cout << "Adding cruise:\n\n";
 	Travel newCruise;
-	newCruise.cruiseNum = Cruises->size() + 1;
+	
+	newCruise.cruiseNum = cruiseNum;
+	
 	cout << "Cruise " << newCruise.cruiseNum << endl
 		<< "Route: ";
 	getline(cin >> ws, newCruise.route);
@@ -129,15 +182,13 @@ void addCruise(vector<Travel> *Cruises) {
 	
 	int input = 0;
 	
-	newCruise.priceClass1 = intValidation("Price for class 1: ");
+	newCruise.priceClass1 = doubleValidation("Price for class 1: ");
 //	cout << "Price for class 1: ";
 //	cin >> newCruise.priceClass1;
+	newCruise.priceClass2 = doubleValidation("Price for class 2: ");
 	
-	cout << "Price for class 2: ";
-	cin >> newCruise.priceClass2;
-	
-	cout << "Number of passengers in class 1: ";
-	cin >> newCruise.numPassengersClass1;
+	newCruise.numPassengersClass1 = 
+				intValidation("Number of passengers in class 1: ");
 	
 	cout << "Number of passengers in class 2: ";
 	cin >> newCruise.numPassengersClass2;
@@ -151,10 +202,10 @@ void addCruise(vector<Travel> *Cruises) {
 	Cruises->push_back(newCruise);
 }
 
-void printVector(vector<Travel> Cruises) {
+void printVector(vector<Travel> Cruises, bool pause = true) {
 	
 	system("cls");
-	if(Cruises.size() == 0)
+	if(!areCruises(Cruises))
 	{
 		cout << "There are no cruises.\n";
 		system("pause");
@@ -173,12 +224,50 @@ void printVector(vector<Travel> Cruises) {
 			<< "Class 1 passengers: " << Cruises.at(i).numPassengersClass1 << endl
 			<< "Class 2 passengers: " << Cruises.at(i).numPassengersClass2 << endl
 			<< "Start date: " << Cruises.at(i).dateStart << endl
-			<< "End date: " << Cruises.at(i).dateEnd << endl
+			<< "End date: " << Cruises.at(i).dateEnd << "\n\n";
 			
-			
-			;
-		cout << "\n\n\n";
+			if(i != Cruises.size() - 1)separate(30);
+			cout << "\n\n";
+		//cout << "\n\n\n";
 	}
+	if(pause)system("pause");
+}
+
+void changeCruise(vector<Travel> *Cruises) {
+	system("cls");
+	if(!areCruises(*Cruises))
+	{
+		cout << "You can't change cruises, because there are none.\n";
+		system("pause");
+		return;
+	}
+	cout << "You choosed to change a cruise\n"
+		<< "There are currently " << Cruises->size() << " cruise(s)\n"
+		<< "Do you want to print all cruises?(yes/no)\n";
+	if(YN())printVector(*Cruises,false);
+	
+	//string print = "between 1 and " + to_string(Cruises->size());
+	separate(strlen("Choose which cruise you want to change"));
+	cout << "\n\nChoose which cruise you want to change\n";
+		//<< print;
+	int cruiseToChange;
+	
+	do 
+		cruiseToChange = intValidation("between 1 and " +
+							to_string(Cruises->size()) +
+							 "\nNumber of cruise: ");
+							 
+	while(cruiseToChange < 1 || cruiseToChange > Cruises->size());
+	
+	addCruise(Cruises,cruiseToChange);
+	
+	cout << "CruisesToChange: " << cruiseToChange << "\ncruise num: " << Cruises->at(cruiseToChange).cruiseNum;
+	
+	swap(Cruises[cruiseToChange - 1], Cruises[Cruises->size() - 1]);
+	//Cruises->erase(Cruises->end());
+	cout << "\nCruise number " << cruiseToChange << " is changed\n";
+	Cruises->at(cruiseToChange - 1).cruiseNum = Cruises->at(Cruises->size() - 1).cruiseNum;
+	
 	system("pause");
 }
 
@@ -217,7 +306,28 @@ void functions() {
 int main() {
 	
 	vector<Travel> Cruises;
+	/*
 	Travel A;// = new Travel;
+	A.cruiseNum = 1;
+	A.captain = "Ivan";
+	Cruises.push_back(A);
+	Travel B;
+	B.cruiseNum = 2;
+	B.captain = "Zoro";
+	Cruises.push_back(B);
+	printVector(Cruises);
+	Travel C;
+	C.cruiseNum = 3;
+	C.captain = "Gosho";
+	Cruises.push_back(C);
+	printVector(Cruises);
+	swap(Cruises[0], Cruises[Cruises.size() - 1]);
+	printVector(Cruises);
+	Cruises.at(0).cruiseNum = Cruises.at(Cruises.size()-1).cruiseNum;
+	printVector(Cruises);
+	Cruises.erase(Cruises.end());
+	printVector(Cruises);
+	*/
 	ofstream fout;
 	ifstream fin;
 	fout.open("memory.txt", ios::out | ios::app);
@@ -225,11 +335,10 @@ int main() {
 	//fout << "ivan" << endl;
 	if (fin.is_open())
 	{
-		cout << "13\n";
+		cout << "File is ready\n";
 		system("pause");
 		//fin.close();
 	}
-	
 	else 
 	{
 		cout << "Unable to open file\n";
@@ -245,15 +354,19 @@ int main() {
 		system("cls");
 		functions();
 		
-		cout << "\noption: ";
-		cin >> input;
+		//cout << "\noption: ";
+		input = intValidation("\noption: ");
+		
 		switch(input)
 		{
 			case 1: addCruise(&Cruises); break;
 			case 2: printVector(Cruises); break;
-			
+			case 3: changeCruise(&Cruises);break;
 			case 7: ODIT(); break;
 			case 8: break;
+			
+			default: cout << "Enter a number between 1 and 8!!!\n";
+				system("pause");
 		}
 	}
 	
