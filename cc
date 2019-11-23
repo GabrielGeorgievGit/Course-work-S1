@@ -18,9 +18,7 @@ struct Travel {
 	
 	int numPassengersClass1, numPassengersClass2;
 	
-	int day, month, year;
 	string dateStart, dateEnd;
-	
 	
 };
 
@@ -99,8 +97,8 @@ bool YN() {
 
 void separate(int minuses) { // cosmetic
 	cout << "<";
-	for(int i = 0; i < minuses - 2; i++)
-		cout << "-";
+	for(int i = 0; i < (minuses - 2) / 2; i++)
+		cout << " - ";
 	cout << ">";
 }
 
@@ -115,18 +113,19 @@ void maxCruisesValidation() {
 		system("pause");
 }
 
+//bool isNegative(double a) {return a < 0 ? true : false;}
+
 int intValidation(string print) {
 	
 	cout << print;
 	int input;
 	cin >> input;
-	while(!cin)
+	
+	while(!cin || input < 0)
 	{
-		cout << "Enter a number!!!";
+		cout << "Enter a positive number!\n";
 		cin.clear();
 		cin.ignore(10000, '\n');
-	//	system("pause");
-	//	lineEraser(3,print.size());
 		cout << print;
 		cin >> input;	
 	}
@@ -134,18 +133,159 @@ int intValidation(string print) {
 	cin.ignore(10000, '\n');
 	return input;
 }
+
 double doubleValidation(string print) {
+	
 	cout << print;
 	double input;
 	cin >> input;
-	while(!cin)
+	
+	while(!cin || input < 0)
 	{
 		cin.clear();
 		cin.ignore(10000, '\n');
-		cout << "Choose a number!\n" << print;
+		cout << "Enter a value, equal or bigger than zero!\n" << print;
 		cin >> input;	
 	}
 	return input;
+}
+
+struct Date {unsigned day, month, year, hour, min;};
+
+Date getDateValue(string s) //1/3/6 07:03  // IT WAS EZI
+{	//s = "22/11/2019 19:02";
+	Date date;
+	int secondSlashPos;
+	
+	date.day = stoi(s.substr(0, s.find('/')));
+	
+	if(s.at(s.find('/') + 2) == '/')
+	{
+		date.month = stoi(s.substr(s.find('/') + 1, 1));
+		secondSlashPos = s.find('/') + 2;
+	}
+	else 
+	{
+		date.month = stoi(s.substr(s.find('/') + 1, 2));
+		secondSlashPos = s.find('/') + 3;
+	}
+	
+	
+	date.year = stoi(s.substr(secondSlashPos + 1, s.find(' ') - secondSlashPos));
+	
+	date.hour = stoi(s.substr(s.find(' ') + 1, 2));
+	date.min = stoi(s.substr(s.find(':') + 1, 2));
+	
+	return date;
+}
+
+bool isBiggerDate(string date1, string date2) { // IT WAS FUN
+	
+	if(date1 == "" || date2 == "") return false;
+	
+	Date D1, D2;
+	D1 = getDateValue(date1);
+	D2 = getDateValue(date2);
+	
+	if(D1.year > D2.year) return true;//  14/2/6 07:03 || 14/3/6 07:03
+	if(D1.year < D2.year) return false;
+	
+	if(D1.month > D2.month) return true;
+	if(D1.month < D2.month) return false;
+	
+	if(D1.day > D2.day) return true;
+	if(D1.day < D2.day) return false;
+	
+	if(D1.hour > D2.hour) return true;
+	if(D1.hour < D2.hour) return false;
+	
+	if(D1.min > D2.min) return true;
+	if(D1.min < D2.min) return false;
+	
+	return true;
+}
+
+string dateValidation(string print, string minDate = "") {
+						//TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+	unsigned day, month, year, maxDaysOfMonth;
+	unsigned dayMin = 0, monthMin = 0, yearMin = 0, hourMin = 0, minutesMin = 0;;
+	
+	int hour, minutes;
+	
+	string date;
+	if(minDate != "")
+	{
+		dayMin = getDateValue(minDate).day;
+		monthMin = getDateValue(minDate).month;
+		yearMin = getDateValue(minDate).year;
+		hourMin = getDateValue(minDate).hour;
+		minutesMin = getDateValue(minDate).min;
+	}
+	do
+	{
+		date = "";
+		do
+		{
+			cout << print;
+			
+			do
+				day = intValidation("day: ");
+			while(day < 1 || day > 31);
+			
+			do
+				month = intValidation("month: ");
+			while(month < 1 || month > 12);
+			do
+				year = intValidation("year: ");
+			while(year < 1);
+			
+			switch(month)
+			{
+				case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+					maxDaysOfMonth = 31;break;
+				
+				case 4: case 6: case 9: case 11:
+					maxDaysOfMonth = 30;break;
+					
+				default: maxDaysOfMonth = year % 4 == 0 ? 29 : 28; 
+			}
+			
+			if(day > maxDaysOfMonth)
+			{
+				cout << "Invalid date!\n";
+				system("pause");	
+			}
+		}
+		while(day > maxDaysOfMonth);//Cruise start date:\n
+		
+		date += to_string(day) + '/';
+		date += to_string(month) + '/';
+		date += to_string(year);
+		
+		
+		do	hour = intValidation("hour: ");
+		while(hour > 23);
+		
+		do minutes = intValidation("minutes: ");
+		while(minutes > 59);
+		
+		string sHour = to_string(hour), 
+			sMinutes = to_string(minutes);
+		if(sHour.length() == 1)sHour = "0" + sHour;
+		if(sMinutes.length() == 1)sMinutes = "0" + sMinutes;
+		
+		//date += " " + hour + ':' + minutes;
+		date = date + " " + sHour + ":" + sMinutes;
+		
+		if(isBiggerDate(minDate, date))
+		{
+			cout << "Enter a bigger date than " << minDate << endl;
+			system("pause");
+		}
+	}
+	while(isBiggerDate(minDate, date));
+	
+	return date;
 }
 
 bool areCruises(vector<Travel> Cruises) {
@@ -154,7 +294,10 @@ bool areCruises(vector<Travel> Cruises) {
 
 void updateFile(vector<Travel> Cruises) {
 	
-	ofstream updateFile("memory.txt");
+	ofstream updateFile;
+	updateFile.open("memory.txt", ios::out);// | ios::app);
+	//cout<<"\nUpdating...\n";
+	//system("pause");
 	for(int i = 0; i < Cruises.size(); ++i)
 	{
 		updateFile << Cruises.at(i).cruiseNum << endl;
@@ -167,12 +310,14 @@ void updateFile(vector<Travel> Cruises) {
 		updateFile << Cruises.at(i).numPassengersClass2 << endl;
 		updateFile << Cruises.at(i).dateStart << endl;
 		updateFile << Cruises.at(i).dateEnd << endl;
-	} 
+	}
+	updateFile.close();
 }
 
 void loadMemory(vector<Travel> *Cruises) {
 	
-	ifstream getFile("memory.txt");
+	ifstream getFile;
+	getFile.open("memory.txt", ios::in);
 	
 	Travel loader;
 	
@@ -203,7 +348,7 @@ void loadMemory(vector<Travel> *Cruises) {
 		
 		Cruises->push_back(loader);
 	}
-	getFile.close();
+	getFile.close();/////////////////////////////////////////////////////
 }
 
 void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
@@ -217,10 +362,7 @@ void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
 	}
 	else cout << "Changing cruise " << cruiseNum << "\n\n";
 	
-	ofstream fout;
-	ifstream fin;
-	fout.open("memory.txt", ios::out | ios::app);
-	fin.open("memory.txt", ios::in);
+	cout << "There are currently " << Cruises->size() << " cruises\n";//DELETE
 	
 	Travel newCruise;
 	
@@ -228,42 +370,45 @@ void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
 	
 	cout << "Cruise " << newCruise.cruiseNum << endl
 		<< "Route: ";
-	fout << newCruise.cruiseNum << endl;
 	
 	getline(cin >> ws, newCruise.route);
-	fout << newCruise.route << endl;
 	
 	cout << "Ship : ";
 	getline(cin >> ws, newCruise.ship);
-	fout << newCruise.ship << endl;
 	
 	cout << "Captain name: ";
 	getline(cin >> ws, newCruise.captain);
-	fout << newCruise.captain << endl;
-	
-	int input = 0;
 	
 	newCruise.priceClass1 = doubleValidation("Price for class 1: ");
-	fout << newCruise.priceClass1 << endl;
 	
 	newCruise.priceClass2 = doubleValidation("Price for class 2: ");
-	fout << newCruise.priceClass2 << endl;
 	
 	newCruise.numPassengersClass1 = 
 				intValidation("Number of passengers in class 1: ");
-	fout << newCruise.numPassengersClass1 << endl;
 	
-	cout << "Number of passengers in class 2: ";
-	cin >> newCruise.numPassengersClass2;
-	fout << newCruise.numPassengersClass2 << endl;
+	newCruise.numPassengersClass2 = 
+				intValidation("Number of passengers in class 2: ");
 	
-	cout << "Starting date of cruise: ";
-	cin >> newCruise.dateStart;
-	fout << newCruise.dateStart << endl;
+	newCruise.dateStart = dateValidation("Starting date of cruise: \n");
 	
-	cout << "Ending date of cruise: ";
-	cin >> newCruise.dateEnd;
-	fout << newCruise.dateEnd << endl;
+	newCruise.dateEnd =
+		dateValidation("Ending date of cruise: \n", newCruise.dateStart);
+	
+	
+	ofstream addToFile;
+	addToFile.open("memory.txt", ios::out | ios::app);
+	
+	addToFile << newCruise.cruiseNum << endl;
+	addToFile << newCruise.route << endl;
+	addToFile << newCruise.ship << endl;
+	addToFile << newCruise.captain << endl;
+	addToFile << newCruise.priceClass1 << endl;
+	addToFile << newCruise.priceClass2 << endl;
+	addToFile << newCruise.numPassengersClass1 << endl;
+	addToFile << newCruise.numPassengersClass2 << endl;
+	addToFile << newCruise.dateStart << endl;
+	addToFile << newCruise.dateEnd << endl;
+	addToFile.close();
 	
 	Cruises->push_back(newCruise);
 }
@@ -277,11 +422,11 @@ void addCruises(vector<Travel> *Cruises) {
 		maxCruisesValidation();
 		return;
 	}
-
 	
 	cout << "Add cruise\n\n"
 		<< "1.Add one cruise\n"
-		<< "2.Add more than one cruises\n";
+		<< "2.Add more than one cruises\n"
+		<< "3.Back\n";
 		
 	int input = 0;
 	while(input !=1 && input != 2)
@@ -294,7 +439,7 @@ void addCruises(vector<Travel> *Cruises) {
 				addCruise(Cruises);
 				return;
 			case 2: break;
-			
+			case 3: return;
 			
 			default: cout << "Choose 1 or 2\n";
 		}
@@ -338,13 +483,13 @@ void addCruises(vector<Travel> *Cruises) {
 		separate(strlen("Continue adding cruises?(yes/no)"));
 		
 		cout << "\n\nContinue adding cruises?(yes/no)\n";
-		
-		if(!YN())break;
+		if(i != input - 1)
+			if(!YN()) break;
 	}
 	
 }
 
-void printVector(vector<Travel> Cruises, bool pause = true) {
+void printVector(vector<Travel> Cruises) {//, bool pause = true) {
 	
 	system("cls");
 	if(!areCruises(Cruises))
@@ -354,7 +499,7 @@ void printVector(vector<Travel> Cruises, bool pause = true) {
 		return;
 	}
 	//vector<Travel>::iterator it;
-	for(int i = 0; i < Cruises.size(); i++)
+	for(int i = 0; i < Cruises.size(); ++i)
 	{
 		
 		cout << "Cruise " << Cruises.at(i).cruiseNum << endl 
@@ -368,11 +513,11 @@ void printVector(vector<Travel> Cruises, bool pause = true) {
 			<< "Start date: " << Cruises.at(i).dateStart << endl
 			<< "End date: " << Cruises.at(i).dateEnd << "\n\n";
 			
-			if(i != Cruises.size() - 1)separate(30);
+			if(i != Cruises.size() - 1) separate(30);
 			cout << "\n\n";
 		//cout << "\n\n\n";
 	}
-	if(pause)system("pause");
+	//if(pause)system("pause");
 }
 
 void changeCruise(vector<Travel> *Cruises) {
@@ -391,7 +536,7 @@ void changeCruise(vector<Travel> *Cruises) {
 		<< "There are currently " << Cruises->size() << " cruise(s)\n"
 		<< "Do you want to print all cruises?(yes/no)\n";
 		
-	if(YN())printVector(*Cruises,false);
+	if(YN())printVector(*Cruises);
 	
 	separate(strlen("Choose which cruise you want to change"));
 	cout << "\n\nChoose which cruise you want to change\n";
@@ -449,10 +594,15 @@ void functions() {
 		;
 }
 
+
 int main() {
-	
+	//cout << isBiggerDate("14/3/6 18:59", "14/3/6 18:58");
+	//cout << "\nout of date\n";
+	//system("pause");
+	//return 0;
 	vector<Travel> Cruises;
 	loadMemory(&Cruises);
+	//trya(Cruises);
 	/*
 	Travel A;
 	A.cruiseNum = 1;
@@ -468,16 +618,16 @@ int main() {
 	C.captain = "Gosho";
 	Cruises.push_back(C);
 	*/
-	ofstream fout;
+	cout << Cruises.size() << " cruises\n";
+	//ofstream fout;
 	ifstream fin;
-	fout.open("memory.txt", ios::out | ios::app);
-	fin.open("memory.txt", ios::in);
+	//fout.open("memory.txt", ios::out | ios::app);
+	fin.open("memory.txt", ios::app);//ios::in
 	
 	if (fin.is_open())
 	{
 		cout << "File is ready\n";
 		system("pause");
-		//fin.close();
 	}
 	else 
 	{
@@ -485,10 +635,7 @@ int main() {
 		system("pause");
 		return 0;
 	}
-	//string a;
-	//getline(fin, a);
-	//cout << a;
-	//Cruises.at(0).route = a;
+	fin.close();
 	
 	int input = 0;
 	
@@ -497,21 +644,21 @@ int main() {
 		system("cls");
 		functions();
 		
-		//cout << "\noption: ";
 		input = intValidation("\noption: ");
 		
 		switch(input)
 		{
 			case 1: addCruises(&Cruises); break;
 			case 2: printVector(Cruises); break;
-			case 3: changeCruise(&Cruises);break;
+			case 3: changeCruise(&Cruises); break;
 			case 7: ODIT(); break;
 			case 8: break;
 			
 			default: cout << "Enter a number between 1 and 8!!!\n";
-				system("pause");
+				//system("pause");
 		}
 		updateFile(Cruises);
+		if(input == 2)system("pause");
 	}
 	
 }
