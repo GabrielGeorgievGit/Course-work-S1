@@ -5,6 +5,8 @@
 #include<string>
 #include <windows.h>
 #include<algorithm>
+#include<ctime>
+#include<chrono>
 using namespace std;
 
 struct Travel {
@@ -21,60 +23,6 @@ struct Travel {
 	string dateStart, dateEnd;
 	
 };
-
-void lineEraser(int propertyIndex, Travel Obj) {
-	
-	system("cls");
-	cout << "Adding cruise:\n"
-		<< "\nRoute: " << Obj.route
-		<< "\nShip : " << Obj.route
-		<< "\nCaptain name: " << Obj.captain << '\n';
-	
-	switch(propertyIndex)
-	{
-		case 1:
-			cout << "Price for class 1: ";
-			if(propertyIndex == 1)
-			{
-				cout << Obj.priceClass1 << '\n';
-				break;
-			}
-		case 2: cout << "Price for class 2: ";
-				if(propertyIndex == 2)
-				{
-					cout << Obj.priceClass2 << '\n';
-					break;
-				}
-		
-		case 3: cout << "Number of passengers in class 1: ";
-					if(propertyIndex == 3)
-				{
-					cout << Obj.numPassengersClass1 << '\n';
-					break;
-				}
-		
-		case 4: cout << "Number of passengers in class 2: ";
-					if(propertyIndex == 4)
-				{
-					cout << Obj.numPassengersClass2 << '\n';
-					break;
-				}
-		
-
-	}
-	int input;
-	cout << "IVAN: ";
-		cout << "\b\b\b\b\b\b";
-	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD coord = {5 , 0};//24 7		 
-	SetConsoleCursorPosition(hStdOut,coord);
-	//cout << "\n\b\b";
-	
-
-	//printf("\b");printf("\b");printf("\b");
-	//const string a = spaces;
-//	cout << spaces;
-}
 
 bool YN() {
 	
@@ -103,7 +51,7 @@ void separate(int minuses) { // cosmetic
 }
 
 bool maxCruisesValidation(vector<Travel> Cruises) {
-	if(Cruises.size() >= 100)return true;
+	if(Cruises.size() >= 100) return true;
 	return false;
 }
 
@@ -112,8 +60,6 @@ void maxCruisesValidation() {
 		<<"If you want to add cruse, change one\n";
 		system("pause");
 }
-
-//bool isNegative(double a) {return a < 0 ? true : false;}
 
 int intValidation(string print) {
 	
@@ -149,6 +95,8 @@ double doubleValidation(string print) {
 	}
 	return input;
 }
+
+//Date..........................................
 
 struct Date {unsigned day, month, year, hour, min;};
 
@@ -238,7 +186,7 @@ bool isForbiddenDate(vector<Travel> Cruises, Travel Cruise) {
 string dateValidation(string print, string minDate = "") {
 	
 	unsigned day, month, year, maxDaysOfMonth;
-	unsigned dayMin = 0, monthMin = 0, yearMin = 0, hourMin = 0, minutesMin = 0;;
+	unsigned dayMin = 0, monthMin = 0, yearMin = 0, hourMin = 0, minutesMin = 0;
 	
 	int hour, minutes;
 	
@@ -318,6 +266,26 @@ string dateValidation(string print, string minDate = "") {
 	while(isBiggerDate(minDate, date));
 
 	return date;
+}
+
+bool isGoneCruise(string startDate) {
+	
+	time_t t = time(NULL);
+	tm *Today = localtime(&t);
+
+    string time = to_string(Today->tm_mday) + '/' +
+				to_string(Today->tm_mon + 1) + '/' +
+				to_string(Today->tm_year + 1900) + ' ' +
+				to_string(Today->tm_hour) + ':' +
+				to_string(Today->tm_min);
+	
+	if(isBiggerDate(time, startDate)) 
+	{
+		cout << "\n\nToday is " << time << '\n';
+		return true;
+	}
+	
+	return false;
 }
 
 bool areCruises(vector<Travel> Cruises) {
@@ -598,7 +566,6 @@ void printVector(vector<Travel> Cruises, int cruiseNum = -1) {
 //D. Korekciq na danni za pytuvane
 
 void changeCruise(vector<Travel> *Cruises) {//TODO--------------------------------------Ako lipsvat danni: syobshtenie
-											//TODO--------------------------------------Nevyzmoznost za korekciq na minalo pytuvane
 	
 	system("cls");
 	
@@ -623,6 +590,12 @@ void changeCruise(vector<Travel> *Cruises) {//TODO------------------------------
 							 "\nNumber of cruise: ");
 							 
 	while(cruiseToChange < 1 || cruiseToChange > Cruises->size());
+	
+	if(isGoneCruise(Cruises->at(cruiseToChange - 1).dateStart))
+	{
+		cout << "\nThis cruise cannot be changed, because it's gone\n\n";
+		return;
+	}
 	
 	addCruise(Cruises,cruiseToChange);
 	
@@ -932,14 +905,8 @@ void functions() {
 		;
 }
 
-void test() {
-	
-	cout << "\nend\n";
-	system("pause");
-}
-
 int main() {
-	
+	//test();
 	vector<Travel> Cruises;
 	loadMemory(&Cruises);
 	
