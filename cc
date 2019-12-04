@@ -1,6 +1,6 @@
 #include<iostream>
 #include<fstream>
-#include<limits>
+
 #include<vector>
 #include<string>
 #include <windows.h>
@@ -9,7 +9,6 @@ using namespace std;
 
 struct Travel {
 	
-	//public:
 	int cruiseNum;
 	string route;
 	string ship;
@@ -153,8 +152,7 @@ double doubleValidation(string print) {
 
 struct Date {unsigned day, month, year, hour, min;};
 
-Date getDateValue(string s) //1/3/6 07:03  // IT WAS EZI
-{	//s = "22/11/2019 19:02";
+Date getDateValue(string s) {
 	Date date;
 	int secondSlashPos;
 	
@@ -180,7 +178,7 @@ Date getDateValue(string s) //1/3/6 07:03  // IT WAS EZI
 	return date;
 }
 
-bool isBiggerDate(string date1, string date2) { // IT WAS FUN
+bool isBiggerDate(string date1, string date2) {
 	
 	if(date1 == "" || date2 == "") return false;
 	
@@ -188,7 +186,7 @@ bool isBiggerDate(string date1, string date2) { // IT WAS FUN
 	D1 = getDateValue(date1);
 	D2 = getDateValue(date2);
 	
-	if(D1.year > D2.year) return true;//  14/2/6 07:03 || 14/3/6 07:03
+	if(D1.year > D2.year) return true;
 	if(D1.year < D2.year) return false;
 	
 	if(D1.month > D2.month) return true;
@@ -238,7 +236,7 @@ bool isForbiddenDate(vector<Travel> Cruises, Travel Cruise) {
 }
 
 string dateValidation(string print, string minDate = "") {
-						//TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+	
 	unsigned day, month, year, maxDaysOfMonth;
 	unsigned dayMin = 0, monthMin = 0, yearMin = 0, hourMin = 0, minutesMin = 0;;
 	
@@ -268,6 +266,7 @@ string dateValidation(string print, string minDate = "") {
 			do
 				month = intValidation("month: ");
 			while(month < 1 || month > 12);
+			
 			do
 				year = intValidation("year: ");
 			while(year < 1);
@@ -275,10 +274,10 @@ string dateValidation(string print, string minDate = "") {
 			switch(month)
 			{
 				case 1: case 3: case 5: case 7: case 8: case 10: case 12:
-					maxDaysOfMonth = 31;break;
+					maxDaysOfMonth = 31; break;
 				
 				case 4: case 6: case 9: case 11:
-					maxDaysOfMonth = 30;break;
+					maxDaysOfMonth = 30; break;
 					
 				default: maxDaysOfMonth = year % 4 == 0 ? 29 : 28; 
 			}
@@ -289,7 +288,7 @@ string dateValidation(string print, string minDate = "") {
 				system("pause");	
 			}
 		}
-		while(day > maxDaysOfMonth);//Cruise start date:\n
+		while(day > maxDaysOfMonth);
 		
 		date += to_string(day) + '/';
 		date += to_string(month) + '/';
@@ -304,10 +303,10 @@ string dateValidation(string print, string minDate = "") {
 		
 		string sHour = to_string(hour), 
 			sMinutes = to_string(minutes);
-		if(sHour.length() == 1)sHour = "0" + sHour;
-		if(sMinutes.length() == 1)sMinutes = "0" + sMinutes;
+			
+		if(sHour.length() == 1) sHour = "0" + sHour;
+		if(sMinutes.length() == 1) sMinutes = "0" + sMinutes;
 		
-		//date += " " + hour + ':' + minutes;
 		date = date + " " + sHour + ":" + sMinutes;
 		
 		if(isBiggerDate(minDate, date))
@@ -357,7 +356,6 @@ void loadMemory(vector<Travel> *Cruises) {
 	string line;
 	while(getline(getFile, line))
 	{
-		//getline(getFile, line);
 		loader.cruiseNum= stoi(line);
 		
 		getline(getFile, loader.route);
@@ -381,8 +379,10 @@ void loadMemory(vector<Travel> *Cruises) {
 		
 		Cruises->push_back(loader);
 	}
-	getFile.close();/////////////////////////////////////////////////////
+	getFile.close();
 }
+
+//B. Dobavqne na morski pytuvaniq
 
 void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
 	
@@ -549,7 +549,9 @@ void addCruises(vector<Travel> *Cruises) {
 	
 }
 
-void printVector(vector<Travel> Cruises, int cruiseNum = -1) {//, bool pause = true) {
+//C. Izvezdane na vsichki pytuvaniq
+
+void printVector(vector<Travel> Cruises, int cruiseNum = -1) {
 	
 	int i = 0;
 	if(cruiseNum == -1)
@@ -558,17 +560,19 @@ void printVector(vector<Travel> Cruises, int cruiseNum = -1) {//, bool pause = t
 		cruiseNum = Cruises.size();
 		i = 0;
 	}
-	else{
+	else
+	{
 		i = cruiseNum;
 		++cruiseNum;
-	} 
+	}
+	
 	if(!areCruises(Cruises))
 	{
 		cout << "There are no cruises.\n";
 		system("pause");
 		return;
 	}
-	//vector<Travel>::iterator it;
+	
 	for(i; i < cruiseNum; ++i)
 	{
 		
@@ -588,37 +592,34 @@ void printVector(vector<Travel> Cruises, int cruiseNum = -1) {//, bool pause = t
 				separate(30);	
 				cout << "\n\n";
 			}
-			
-		//cout << "\n\n\n";
 	}
 }
 
-void changeCruise(vector<Travel> *Cruises) {
+//D. Korekciq na danni za pytuvane
+
+void changeCruise(vector<Travel> *Cruises) {//TODO--------------------------------------Ako lipsvat danni: syobshtenie
+											//TODO--------------------------------------Nevyzmoznost za korekciq na minalo pytuvane
 	
 	system("cls");
 	
 	if(!areCruises(*Cruises))
 	{
 		cout << "You can't change cruises, because there are none.\n";
-		system("pause");
 		return;
 	}
-	
 	
 	cout << "You choosed to change a cruise\n"
 		<< "There are currently " << Cruises->size() << " cruise(s)\n"
 		<< "Do you want to print all cruises?(yes/no)\n";
 		
-	if(YN())printVector(*Cruises);
+	if(YN()) printVector(*Cruises);
 	
 	separate(strlen("Choose which cruise you want to change"));
 	cout << "\n\nChoose which cruise you want to change\n";
 	
 	int cruiseToChange;
-	
 	do 
-		cruiseToChange = intValidation("Between 1 and " +
-							to_string(Cruises->size()) +
+		cruiseToChange = intValidation("Between 1 and " + to_string(Cruises->size()) +
 							 "\nNumber of cruise: ");
 							 
 	while(cruiseToChange < 1 || cruiseToChange > Cruises->size());
@@ -638,8 +639,9 @@ void changeCruise(vector<Travel> *Cruises) {
 	}
 	Cruises->erase(Cruises->end());
 	cout << "\nCruise " << cruiseToChange << " didn't changed.\n";
-	//system("pause");
 }
+
+//E. Sparvki za:
 
 void lowestTotalPrice(vector<Travel> Cruises) {
 	
@@ -653,12 +655,12 @@ void lowestTotalPrice(vector<Travel> Cruises) {
 	
 	int index = 0;
 	unsigned lowest =
-		(Cruises.at(0).priceClass1 + Cruises.at(0).priceClass2);// / 2;
+		(Cruises.at(0).priceClass1 + Cruises.at(0).priceClass2);
 	unsigned avrg;
 		
 	for(int i = 1; i < Cruises.size(); ++i)
 	{	
-		avrg = (Cruises.at(i).priceClass1 + Cruises.at(i).priceClass2);// / 2;
+		avrg = (Cruises.at(i).priceClass1 + Cruises.at(i).priceClass2);
 		
 		if(avrg < lowest)
 		{
@@ -666,9 +668,11 @@ void lowestTotalPrice(vector<Travel> Cruises) {
 			lowest = avrg;
 		}
 	}
-	cout << "Cruise with the lowest average price:\n\n";
+	
+	cout << "Cruise with the lowest total price:\n\n";
 	printVector(Cruises, index);
-	cout << "\n\nLowest average price: " << lowest << "\n\n";
+	
+	cout << "\n\nLowest total price: " << lowest << "\n\n";
 }
 
 void cruiseMostPassengers(vector<Travel> Cruises) {
@@ -712,7 +716,7 @@ void shipMostCruises(vector<Travel> Cruises) {
 		return;
 	}
 	
-	string a[100][2];//[ship name][br]
+	string a[100][2];
 	
 	for(int i = 0; i < Cruises.size(); ++i)
 	{
@@ -733,14 +737,13 @@ void shipMostCruises(vector<Travel> Cruises) {
 	string shipName = a[0][0];
 	
 	for(int i = 1; i < Cruises.size(); ++i)
-	{
+		
 		if(max < stoi(a[i][1]))
 		{
 			max = stoi(a[i][1]);
 			index = i;
 			shipName = a[i][0];
 		}
-	}
 	
 	cout << "Ship with the most cruises: " << shipName
 		<< "\n\nNumber of cruises: " << max
@@ -757,20 +760,29 @@ void shipMostCruises(vector<Travel> Cruises) {
 	}
 }
 
+//F. Odit na morskite putuvaniq:
+
 struct LessThanShip {
+    
+    /*
+	bool operator()(Travel ship1, Travel ship2) {
+		return transform(ship1.ship.begin(), ship1.ship.end(), ship1.ship.begin(), ::tolower) < 
+			transform(ship2.ship.begin(), ship2.ship.end(), ship2.ship.begin(), ::tolower);}//------------------------Oh no :(
+			*/
     
 	bool operator()(Travel &ship1, Travel &ship2) {
 		return ship1.ship < ship2.ship;}
     
-    //bool date(Date date1, Date date2) {return true;}//TODO
-    
     bool month(Date month1, Date month2) {return true;}//TODO..............................................
 };
 
-struct LessThanDate {
-	bool operator()(Travel &date1, Travel &date2) {
-		return !isBiggerDate(date1.dateStart, date2.dateStart);}
-};
+vector<Travel> ShipsToLowercase(vector<Travel> ToLower) {
+	for(int i = 0; i < ToLower.size(); ++i)
+		//ToLower.at(i).ship = to_lower(ToLower.at(i).ship);
+		transform(ToLower.at(i).ship.begin(), ToLower.at(i).ship.end(), ToLower.at(i).ship.begin(), ::tolower);//delete M8 else Oh no :(
+	
+	return ToLower;
+}
 
 void sortByShip(vector<Travel> Cruises) {
 	
@@ -782,16 +794,88 @@ void sortByShip(vector<Travel> Cruises) {
 		return;
 	}
 	
-	cout << "Cruises sorted by ship name:\n\n";
+	//Cruises = ShipsToLowercase(Cruises);
 	
 	sort(Cruises.begin(), Cruises.end(), LessThanShip());
 	
 	printVector(Cruises);
 	
+	cout << "There are " << Cruises.size() << " cruises " 
+		<< ", sorted by their ship name.\n\n";
 }
 
-void sortByDate(vector<Travel> Cruises) {
+//...................................................
+
+struct LessThanDate {
+	bool operator()(Travel &date1, Travel &date2) {
+		return !isBiggerDate(date1.dateStart, date2.dateStart);}
+};
+
+bool InDatePeriod(string dateStart, string date1, string date2) {
+		return isBiggerDate(dateStart, date1) && !isBiggerDate(dateStart, date2);
+}
+
+vector<Travel> getCruisesInPeriod(vector<Travel> Cruises, string date1, string date2) {
 	
+	vector<Travel> inPeriod;
+	
+	for(int i = 0; i < Cruises.size(); ++i)
+	
+		if(InDatePeriod(Cruises.at(i).dateStart, date1, date2))
+			inPeriod.push_back(Cruises.at(i));
+	
+	return inPeriod;
+}
+
+void sortByPeriod(vector<Travel> Cruises) {
+	
+	system("cls");
+	
+	if(!areCruises(Cruises))
+	{
+		cout << "There are no cruises.\n";
+		return;
+	}
+	
+	cout << "Cruises for period, sorted by starting date\n\n";
+	
+	string date1 = "", date2 = "";
+	
+	do
+	{
+	
+		date1 = dateValidation("Starting date of period: \n");
+	
+		date2 =	dateValidation("Ending date of period: \n", date1);
+		
+		Cruises = getCruisesInPeriod(Cruises, date1, date2);
+		
+		if(Cruises.size() == 0)
+		{
+			cout << "There are no cruises in this period\n"
+				<< "Do you want to enter a different period?(Y/N)\n";
+			
+			if(YN())
+			{
+				system("cls");
+				cout << "Cruises for period, sorted by starting date\n\n";
+				continue;
+			}
+			else return;
+		}
+	} while(Cruises.size() == 0);
+	
+	sort(Cruises.begin(), Cruises.end(), LessThanDate());
+	
+	printVector(Cruises);
+	
+	cout << "There are " << Cruises.size() << " cruises between " 
+		<< date1 << " and " << date2 << ", sorted by their starting date.\n\n";
+}
+
+//...................................................
+
+void sortByRouteAndMonth(vector<Travel> Cruises) {//TODO-----------------------------------------
 	system("cls");
 	
 	if(!areCruises(Cruises))
@@ -805,7 +889,6 @@ void sortByDate(vector<Travel> Cruises) {
 	sort(Cruises.begin(), Cruises.end(), LessThanDate());
 	
 	printVector(Cruises);
-	
 }
 
 void ODIT(vector<Travel> Cruises) {
@@ -814,7 +897,7 @@ void ODIT(vector<Travel> Cruises) {
 	
 	cout << "Odit:\n\n" 
 		<< "1.Cruises sorted by ship name\n"
-		<< "2.Cruises for a period sorted by starting date\n"
+		<< "2.Cruises for period, sorted by starting date\n"
 		<< "3.Cruises to routes and month sorted by month\n"
 		<< "4.Back\n"
 		;
@@ -827,13 +910,13 @@ void ODIT(vector<Travel> Cruises) {
 		switch(input)
 		{
 			case 1: sortByShip(Cruises); break;
-			case 2: sortByDate(Cruises); break;
+			case 2: sortByPeriod(Cruises); break;
 			case 4: return;
 		}
 	}
-	
-	//system("pause");
 }
+
+//A. Menu
 
 void functions() {
 	
@@ -849,65 +932,22 @@ void functions() {
 		;
 }
 
-struct MyStruct
-{
-    int key;
-    std::string stringValue;
-
-    MyStruct(int k, const std::string& s) : key(k), stringValue(s) {}
-};
-
-
-
+void test() {
+	
+	cout << "\nend\n";
+	system("pause");
+}
 
 int main() {
-	//cout << isBiggerDate("14/3/6 18:59", "14/3/6 18:58");
-	//cout << "\nout of date\n";
-	//system("pause");
-	//return 0;
-
-	/*
-	std::vector < MyStruct > vec;
-	
-	vec.push_back(MyStruct(4, "test"));
-	vec.push_back(MyStruct(3, "a"));
-	vec.push_back(MyStruct(2, "is"));
-	vec.push_back(MyStruct(1, "this"));
-
-	sort(vec.begin(), vec.end(), LessThan());
-	cout << vec.at(0).key << vec.at(1).key<<vec.at(2).key<< vec.at(3).key;
-	*/
 	
 	vector<Travel> Cruises;
 	loadMemory(&Cruises);
 	
-//	printVector(Cruises);
-//	system("pause");
-//	bool ma = isForbiddenDate(Cruises, Cruises.at(5));
-//	cout  << "ma = "<< ma << '\n';
-	
-	//updateFile(Cruises);
-	//trya(Cruises);
-	/*
-	Travel A;
-	A.cruiseNum = 1;
-	A.captain = "Ivan";
-	Cruises.push_back(A);
-	Travel B;
-	B.cruiseNum = 2;
-	B.captain = "Zoro";
-	Cruises.push_back(B);
-	
-	Travel C;
-	C.cruiseNum = 3;
-	C.captain = "Gosho";
-	Cruises.push_back(C);
-	*/
 	cout << Cruises.size() << " cruises\n";
-	//ofstream fout;
-	ifstream fin;
-	//fout.open("memory.txt", ios::out | ios::app);
-	fin.open("memory.txt", ios::app);//ios::in
+	
+	ifstream fin;//TODO-------------------------------------------------Otdelna funkciq za proverka na faila
+	
+	fin.open("memory.txt", ios::app);
 	
 	if (fin.is_open())
 	{
@@ -947,6 +987,5 @@ int main() {
 		}
 		updateFile(Cruises);
 		if(input > 1 /*&& input != 7*/ && input != 8) system("pause");
-		//loadMemory(&Cruises);//scan?
 	}
 }
