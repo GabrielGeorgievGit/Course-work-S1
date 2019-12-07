@@ -7,6 +7,7 @@
 #include<algorithm>
 #include<ctime>
 #include<chrono>
+
 using namespace std;
 
 struct Travel {
@@ -98,11 +99,26 @@ double doubleValidation(string print) {
 
 //Date..........................................
 
-struct Date {unsigned day, month, year, hour, min;};
+struct Date {unsigned day, month, year, hour, min; string toStr;};
 
 Date getDateValue(string s) {
+	
 	Date date;
 	int secondSlashPos;
+	date.toStr = s;
+	//if(s.find('/') == string::npos) cout << "GG\n";
+	if(s == "" || s.length() < 11 ||
+		s.find('/') == string::npos ||
+		s.find(':') == string::npos ||
+		s.find(' ') == string::npos)
+	{
+		date.day = 0;
+		date.month = 0;
+		date.year = 0;
+		date.hour = 0;
+		date.min = 0;
+		return date;
+	}
 	
 	date.day = stoi(s.substr(0, s.find('/')));
 	
@@ -268,7 +284,7 @@ string dateValidation(string print, string minDate = "") {
 	return date;
 }
 
-bool isGoneCruise(string startDate) {
+bool isGoneCruise(string startDate) {//minalo pytuvane ? true : false
 	
 	time_t t = time(NULL);
 	tm *Today = localtime(&t);
@@ -288,14 +304,15 @@ bool isGoneCruise(string startDate) {
 	return false;
 }
 
-bool areCruises(vector<Travel> Cruises) {
+bool areCruises(vector<Travel> Cruises) {//dali ima pytuvaniq true : false
 	return Cruises.size() == 0 ? false : true;
 }
 
-void updateFile(vector<Travel> Cruises) {
+//G. File............................................
+void updateFile(vector<Travel> Cruises) {//predavane na danni kum faila
 	
-	ofstream updateFile;
-	updateFile.open("memory.txt", ios::out);// | ios::app);
+	ofstream updateFile, updateBinary;
+	updateFile.open("All Cruises.txt", ios::out);// | ios::app);
 	//cout<<"\nUpdating...\n";
 	//system("pause");
 	for(int i = 0; i < Cruises.size(); ++i)
@@ -312,12 +329,20 @@ void updateFile(vector<Travel> Cruises) {
 		updateFile << Cruises.at(i).dateEnd << '\n';
 	}
 	updateFile.close();
+	/*
+	updateBinary.open("memory.ban", ios::out | ios::binary);
+	if(updateBinary.fail()){
+		cout << "No file";system("pause");return;
+	}
+	for(int i = 0; i < Cruises.size(); ++i)
+		updateBinary.write((char*)&(Cruises.at(i)), sizeof(Cruises.at(i)));
+	updateFile.close();*/
 }
 
-void loadMemory(vector<Travel> *Cruises) {
+void loadMemory(vector<Travel> *Cruises) {//vzemane na danni ot faila
 	
 	ifstream getFile;
-	getFile.open("memory.txt", ios::in);
+	getFile.open("All Cruises.txt", ios::in);
 	
 	Travel loader;
 	
@@ -426,7 +451,7 @@ void addCruise(vector<Travel> *Cruises, int cruiseNum = 0) {
 	while(forbidden);
 	
 	ofstream addToFile;
-	addToFile.open("memory.txt", ios::out | ios::app);
+	addToFile.open("memory.ban", ios::out | ios::app);
 	
 	addToFile << newCruise.cruiseNum << '\n';
 	addToFile << newCruise.route << '\n';
@@ -564,8 +589,37 @@ void printVector(vector<Travel> Cruises, int cruiseNum = -1) {
 }
 
 //D. Korekciq na danni za pytuvane
+bool allDataForCruise(Travel Cruise) {//vsichki danni sustestvuvat za kruiza true : false
+	
+	Date start = getDateValue(Cruise.dateStart),
+		end = getDateValue(Cruise.dateEnd);
+		
+	if(
+		Cruise.cruiseNum != 0 &&
+		Cruise.route != "" && 
+		Cruise.ship != "" && 
+		Cruise.captain != ""&& 
+		Cruise.priceClass1 != 0 && 
+		Cruise.priceClass2 != 0 && 
+		Cruise.numPassengersClass1 != 0 && 
+		Cruise.numPassengersClass2 != 0 && 
+		start.day != 0 &&
+		start.month != 0 &&
+		start.year != 0 &&
+		end.day != 0 &&
+		end.month != 0 &&
+		end.year != 0 &&
+		start.toStr.find('/') != string::npos &&
+		start.toStr.find(':') != string::npos &&
+		start.toStr.find(' ') != string::npos &&
+		end.toStr.find('/') != string::npos &&
+		end.toStr.find(':') != string::npos &&
+		end.toStr.find(' ') != string::npos) return true;
+		
+	return false;
+}
 
-void changeCruise(vector<Travel> *Cruises) {//TODO--------------------------------------Ako lipsvat danni: syobshtenie
+void changeCruise(vector<Travel> *Cruises) {
 	
 	system("cls");
 	
@@ -591,7 +645,13 @@ void changeCruise(vector<Travel> *Cruises) {//TODO------------------------------
 							 
 	while(cruiseToChange < 1 || cruiseToChange > Cruises->size());
 	
-	if(isGoneCruise(Cruises->at(cruiseToChange - 1).dateStart))
+	if(!allDataForCruise(Cruises->at(cruiseToChange - 1)))//dali sa nalichni dannite
+	{
+		cout << "This cruise cannot be changed, because there is not enougth data for it.\n\n";
+		return;
+	}
+	
+	if(isGoneCruise(Cruises->at(cruiseToChange - 1).dateStart))//dali e minalo pytuvane
 	{
 		cout << "\nThis cruise cannot be changed, because it's gone\n\n";
 		return;
@@ -734,7 +794,7 @@ void shipMostCruises(vector<Travel> Cruises) {
 }
 
 //F. Odit na morskite putuvaniq:
-
+//sort by ship:
 struct LessThanShip {
     
     /*
@@ -777,8 +837,7 @@ void sortByShip(vector<Travel> Cruises) {
 		<< ", sorted by their ship name.\n\n";
 }
 
-//...................................................
-
+//sort by period
 struct LessThanDate {
 	bool operator()(Travel &date1, Travel &date2) {
 		return !isBiggerDate(date1.dateStart, date2.dateStart);}
@@ -847,6 +906,19 @@ void sortByPeriod(vector<Travel> Cruises) {
 }
 
 //...................................................
+//sort by route and month
+vector<Travel> getByRouteAndMonth(vector<Travel> Cruises, string route, int month) {
+	vector<Travel> Filter;
+	Date startDate;
+	
+	for(int i = 0; i < Cruises.size(); ++i)
+	{
+		startDate = getDateValue(Cruises.at(i).dateStart);
+		if(Cruises.at(i).route == route && startDate.month == month)
+			Filter.push_back(Cruises.at(i));
+	}
+	return Filter;
+}
 
 void sortByRouteAndMonth(vector<Travel> Cruises) {//TODO-----------------------------------------
 	system("cls");
@@ -857,13 +929,33 @@ void sortByRouteAndMonth(vector<Travel> Cruises) {//TODO------------------------
 		return;
 	}
 	
-	cout << "Cruises sorted by ship name:\n\n";
+	cout << "Cruises by route and month, sorted by month:\n\n";
 	
+	string givenRoute;
+	int givenMonth = 0;
+	
+	cout << "Choose route: ";
+	getline(cin, givenRoute);
+	do
+		givenMonth = intValidation("Choose the month number(between 1 and 12): ");
+	while(givenMonth < 1 || givenMonth > 12);
+	Cruises = getByRouteAndMonth(Cruises, givenRoute, givenMonth);
+	
+	if(Cruises.size() == 0)
+	{
+		cout << "\n\nThere are no cruises going to " << givenRoute << " in " << givenMonth << " month.";
+		return;
+	}
+	//sort by month
 	sort(Cruises.begin(), Cruises.end(), LessThanDate());
 	
 	printVector(Cruises);
+	
+	cout << "There are " << Cruises.size() << " cruises going to " 
+		<< givenRoute << " in " << givenMonth << " month, sorted by their starting date.\n\n";
 }
 
+//menu Odit
 void ODIT(vector<Travel> Cruises) {
 	
 	system("cls");
@@ -884,7 +976,9 @@ void ODIT(vector<Travel> Cruises) {
 		{
 			case 1: sortByShip(Cruises); break;
 			case 2: sortByPeriod(Cruises); break;
+			case 3: sortByRouteAndMonth(Cruises); break;
 			case 4: return;
+			default: cout << "Enter a number between 1 and 4!!!\n";
 		}
 	}
 }
@@ -906,7 +1000,35 @@ void functions() {
 }
 
 int main() {
-	//test();
+	vector<Travel> a;
+	/*
+	Travel z;
+	z.cruiseNum = 6;
+	z.route = "Africa";
+	z.captain = "Ivan";
+	z.ship = "Ship";
+	z.priceClass1 = 10;
+	z.priceClass2 = 5;
+	z.numPassengersClass1 = 20;
+	z.numPassengersClass2 = 5;
+	z.dateStart = "10/12/2000 10:30";
+	z.dateStart = "12/12/2005 20:10";
+	a.push_back(z);
+	ofstream fout;
+	fout.open("memory.bin", ios::out | ios::binary);
+	fout.write((char*)&a.at(0), sizeof(Travel));
+	fout.close();
+	
+	Travel b;
+	a.push_back(b);
+	ifstream finn;
+	finn.open("memory.bin", ios::in | ios::binary);
+	//for (int i = 0; i < a.size(); ++i)
+    	finn.read ( (char*)&a.at(0), sizeof(a.at(0)) );
+	//finn.read(&a.at(0), sizeof(a.at(0)));
+	finn.close();
+	cout << a.at(0).cruiseNum<<endl<<a.at(0).captain;
+	*/
 	vector<Travel> Cruises;
 	loadMemory(&Cruises);
 	
@@ -914,7 +1036,7 @@ int main() {
 	
 	ifstream fin;//TODO-------------------------------------------------Otdelna funkciq za proverka na faila
 	
-	fin.open("memory.txt", ios::app);
+	fin.open("All Cruises.txt", ios::app);
 	
 	if (fin.is_open())
 	{
