@@ -1,12 +1,8 @@
 #include<iostream>
 #include<fstream>
-
 #include<vector>
-//#include<string>
-#include <windows.h>//strlen for separator
 #include<algorithm>//sort
 #include<ctime>//today
-//#include<chrono>
 
 using namespace std;
 
@@ -308,6 +304,24 @@ bool areCruises(vector<Travel> Cruises) {//dali ima pytuvaniq true : false
 }
 
 //G. File............................................
+bool fileIsReady() {
+	
+	ifstream fin;
+	
+	fin.open("memory.bin", ios::app);
+	
+	if (fin.is_open())
+	{
+		fin.close();
+		return true;
+	}
+	else 
+	{	
+		fin.close();
+		return false;
+	}
+}
+
 void updateFile(vector<Travel> Cruises) {//predavane na danni kum faila
 	
 	ofstream updateFile, updateBinary;
@@ -329,7 +343,7 @@ void updateFile(vector<Travel> Cruises) {//predavane na danni kum faila
 	updateFile.close();
 	
 	
-	updateBinary.open("memory.ban", ios::out | ios::binary);
+	updateBinary.open("memory.bin", ios::out | ios::binary);
 	size_t strSize = 0;
 	
 	for(int i = 0; i < Cruises.size(); ++i)
@@ -338,15 +352,15 @@ void updateFile(vector<Travel> Cruises) {//predavane na danni kum faila
 		
 		strSize = Cruises.at(i).route.length();
 		updateBinary.write((char*)&strSize, sizeof(strSize));
-		updateBinary.write((char*)&Cruises.at(i).route[0], sizeof(strSize));
+		updateBinary.write((char*)&Cruises.at(i).route[0], strSize);
 		
 		strSize = Cruises.at(i).ship.length();
 		updateBinary.write((char*)&strSize, sizeof(strSize));
-		updateBinary.write((char*)&Cruises.at(i).ship[0], sizeof(strSize));
+		updateBinary.write((char*)&Cruises.at(i).ship[0], strSize);
 		
 		strSize = Cruises.at(i).captain.length();
 		updateBinary.write((char*)&strSize, sizeof(strSize));
-		updateBinary.write((char*)&Cruises.at(i).captain[0], sizeof(strSize));
+		updateBinary.write((char*)&Cruises.at(i).captain[0], strSize);
 		
 		updateBinary.write((char*)&Cruises.at(i).priceClass1, sizeof(Cruises.at(i).priceClass1));
 		
@@ -358,13 +372,12 @@ void updateFile(vector<Travel> Cruises) {//predavane na danni kum faila
 		
 		strSize = Cruises.at(i).dateStart.length();
 		updateBinary.write((char*)&strSize, sizeof(strSize));
-		updateBinary.write((char*)&Cruises.at(i).dateStart[0], sizeof(strSize));
+		updateBinary.write((char*)&Cruises.at(i).dateStart[0], strSize);
 		
 		strSize = Cruises.at(i).dateEnd.length();
 		updateBinary.write((char*)&strSize, sizeof(strSize));
-		updateBinary.write((char*)&Cruises.at(i).dateEnd[0], sizeof(strSize));
+		updateBinary.write((char*)&Cruises.at(i).dateEnd[0], strSize);
 	}
-	
 	
 	updateBinary.close();
 }
@@ -402,13 +415,13 @@ void loadMemory(vector<Travel> *Cruises) {//vzemane na danni ot faila
 		getline(getFile, loader.dateEnd);
 		
 		++cruiseNum;
-		Cruises->push_back(loader);
+//		Cruises->push_back(loader);//vzemane danni ot txt
 	}
 	getFile.close();
 	
 	size_t strSize = 0;
 	ifstream getBinary;
-	getBinary.open("memory.ban", ios::in | ios::binary);
+	getBinary.open("memory.bin", ios::in | ios::binary);
 	Travel loadBinary;
 	
 	for(int i = 0; i < cruiseNum; ++i)
@@ -418,17 +431,17 @@ void loadMemory(vector<Travel> *Cruises) {//vzemane na danni ot faila
 		strSize = loadBinary.route.length();
 		getBinary.read((char*)&strSize, sizeof(strSize));
 		loadBinary.route.resize(strSize);
-		getBinary.read((char*)&loadBinary.route[0], sizeof(strSize));
+		getBinary.read((char*)&loadBinary.route[0], strSize);
 		
 		strSize = loadBinary.ship.length();
 		getBinary.read((char*)&strSize, sizeof(strSize));
 		loadBinary.ship.resize(strSize);
-		getBinary.read((char*)&loadBinary.ship[0], sizeof(strSize));
+		getBinary.read((char*)&loadBinary.ship[0], strSize);
 		
 		strSize = loadBinary.captain.length();
 		getBinary.read((char*)&strSize, sizeof(strSize));
 		loadBinary.captain.resize(strSize);
-		getBinary.read((char*)&loadBinary.captain[0], sizeof(strSize));
+		getBinary.read((char*)&loadBinary.captain[0], strSize);
 		
 		getBinary.read((char*)&loadBinary.priceClass1, sizeof(loadBinary.priceClass1));
 		
@@ -441,14 +454,14 @@ void loadMemory(vector<Travel> *Cruises) {//vzemane na danni ot faila
 		strSize = loadBinary.dateStart.length();
 		getBinary.read((char*)&strSize, sizeof(strSize));
 		loadBinary.dateStart.resize(strSize);
-		getBinary.read((char*)&loadBinary.dateStart[0], sizeof(strSize));
+		getBinary.read((char*)&loadBinary.dateStart[0], strSize);
 		
 		strSize = loadBinary.dateEnd.length();
 		getBinary.read((char*)&strSize, sizeof(strSize));
 		loadBinary.dateEnd.resize(strSize);
-		getBinary.read((char*)&loadBinary.dateEnd[0], sizeof(strSize));
+		getBinary.read((char*)&loadBinary.dateEnd[0], strSize);
 		
-//		Cruises->push_back(loadBinary);
+		Cruises->push_back(loadBinary);//vzemane na danni ot binary
 	}
 	
 	getBinary.close();
@@ -547,7 +560,7 @@ void addCruises(vector<Travel> *Cruises) {
 		<< "3.Back\n";
 		
 	int input = 0;
-	while(input !=1 && input != 2)
+	while(input != 1 && input != 2)
 	{
 		input = intValidation("Answer: ");
 		
@@ -596,7 +609,7 @@ void addCruises(vector<Travel> *Cruises) {
 		
 		cout << '\n';
 		
-		separate(strlen("Continue adding cruises?(yes/no)"));
+		separate(32);
 		
 		cout << "\n\nContinue adding cruises?(yes/no)\n";
 		if(i != input - 1)
@@ -658,20 +671,23 @@ bool allDataForCruise(Travel Cruise) {//vsichki danni sustestvuvat za kruiza tru
 		
 	if(
 		Cruise.cruiseNum != 0 &&
-		Cruise.route != "" && 
-		Cruise.ship != "" && 
-		Cruise.captain != ""&& 
-		Cruise.priceClass1 != 0 && 
-		Cruise.priceClass2 != 0 && 
-		Cruise.numPassengersClass1 != 0 && 
-		Cruise.numPassengersClass2 != 0 && 
+		Cruise.route != "" &&
+		Cruise.ship != "" &&
+		Cruise.captain != ""&&
+		
+		Cruise.priceClass1 != 0 &&
+		Cruise.priceClass2 != 0 &&
+		Cruise.numPassengersClass1 != 0 &&
+		Cruise.numPassengersClass2 != 0 &&
+		
 		start.day != 0 &&
 		start.month != 0 &&
 		start.year != 0 &&
 		end.day != 0 &&
 		end.month != 0 &&
 		end.year != 0 &&
-		start.toStr.find('/') != string::npos &&
+		
+		start.toStr.find('/') != string::npos &&//ako simvola systestvuva vyv datata
 		start.toStr.find(':') != string::npos &&
 		start.toStr.find(' ') != string::npos &&
 		end.toStr.find('/') != string::npos &&
@@ -697,7 +713,7 @@ void changeCruise(vector<Travel> *Cruises) {
 		
 	if(YN()) printVector(*Cruises);
 	
-	separate(strlen("Choose which cruise you want to change"));
+	separate(38);
 	cout << "\n\nChoose which cruise you want to change\n";
 	
 	int cruiseToChange;
@@ -721,7 +737,7 @@ void changeCruise(vector<Travel> *Cruises) {
 	
 	addCruise(Cruises,cruiseToChange);
 	
-	if(Cruises->at(Cruises->size() - 1).dateEnd != "")
+	if(Cruises->at(Cruises->size() - 1).dateEnd != "")//ako poslednoto pytuvane ne se e promenilo
 	{
 		Cruises->at(cruiseToChange - 1) = Cruises->at(Cruises->size() - 1);
 		
@@ -732,7 +748,9 @@ void changeCruise(vector<Travel> *Cruises) {
 		
 		return;
 	}
+	
 	Cruises->erase(Cruises->end());
+	
 	cout << "\nCruise " << cruiseToChange << " didn't changed.\n";
 }
 
@@ -796,8 +814,11 @@ void cruiseMostPassengers(vector<Travel> Cruises) {
 			theMost = current;
 		}
 	}
+	
 	cout << "Cruise with the most passengers:\n\n";
+	
 	printVector(Cruises, index);
+	
 	cout << "\nPassengers: " << theMost << "\n\n";
 }
 
@@ -1037,82 +1058,28 @@ void functions() {
 		<< "5.Cruise with the most passengers\n"
 		<< "6.Ship with the most cruises\n"
 		<< "7.Show cruises sorted by...\n"
-		<< "8.Exit\n"
-		;
+		<< "8.Exit\n";
 }
-void g()
-{
-	vector<Travel> a;
-	
-	Travel z;
-	z.cruiseNum = 6;
-	z.route = "Africa";
-	z.captain = "Ivan";
-	z.ship = "Ship";
-	z.priceClass1 = 10;
-	z.priceClass2 = 5;
-	z.numPassengersClass1 = 20;
-	z.numPassengersClass2 = 5;
-	z.dateStart = "10/12/2000 10:30";
-	z.dateStart = "12/12/2005 20:10";
-	
-	a.push_back(z);
-	
-	ofstream fout;
-	fout.open("memory.bin", ios::out | ios::binary);
-	
-	fout.write((char*)&a.at(0).cruiseNum, sizeof(a.at(0).cruiseNum));
-	size_t size = 0;
-	size = a.at(0).route.length();
-	fout.write((char*)&size, sizeof(size));
-	fout.write((char*)&a.at(0).route[0], sizeof(size));
-	
-	fout.close();
-	
-//	size_t size = 0;
-	vector<Travel> b;
-	Travel c;
-	b.push_back(c);
-	
-	//size = b.at(0).route.length();
-	
-	ifstream finn;
-	finn.open("memory.bin", ios::in | ios::binary);
-	
-    finn.read ((char*)&b.at(0).cruiseNum, sizeof(b.at(0).cruiseNum));
-    
-    size = b.at(0).route.length();
-    finn.read((char*)&size, sizeof(size));
-    b.at(0).route.resize(size);
-    finn.read((char*)&b.at(0).route[0], sizeof(size));
-    
-	finn.close();
-	cout <<"cNum: "<< b.at(0).cruiseNum << "\nroute: " << b.at(0).route <<'\n';
-}
-int main() {
 
+int main() {
+	
 	vector<Travel> Cruises;
-	loadMemory(&Cruises);
 	
-	cout << Cruises.size() << " cruises\n";
-	cout << Cruises.at(0).cruiseNum << Cruises.at(0).ship;//delete after checking
-	
-	ifstream fin;//TODO-------------------------------------------------Otdelna funkciq za proverka na faila
-	
-	fin.open("All Cruises.txt", ios::app);
-	
-	if (fin.is_open())
-	{
+	if(fileIsReady())
+	{	
+		loadMemory(&Cruises);
+		
 		cout << "File is ready\n";
+		
+		cout << "There are " << Cruises.size() << " cruises\n";
 		system("pause");
 	}
-	else 
+	else
 	{
 		cout << "Unable to open file\n";
 		system("pause");
-		return 0;
+		//return 0;
 	}
-	fin.close();
 	
 	int input = 0;
 	
@@ -1138,6 +1105,7 @@ int main() {
 				system("pause");
 		}
 		updateFile(Cruises);
-		if(input > 1 /*&& input != 7*/ && input != 8) system("pause");
+		
+		if(input > 1 && input != 8 && input < 8) system("pause");
 	}
 }
